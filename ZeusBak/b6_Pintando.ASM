@@ -38,7 +38,7 @@ AppEntry                NOP                             ;De esta forma cargamos 
                         LD HL, Cuadradito
                         LD (DirCaracterUsr), HL
                         CALL Pintar                     ;Llamamos a pintar, que pintará en la coordenada (NumFila) (Numcolumna)el caracter que comienza en (DirCaracterUsr)
-                        LD HL,15                        ;Lo metemos en registro HL
+                        LD HL,21                        ;Lo metemos en registro HL
                         LD (NumFila), HL                ; y lo cargamos a la "variable de fila"
                         LD HL, $10
                         LD (NumColumna), HL

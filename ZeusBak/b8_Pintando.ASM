@@ -42,7 +42,7 @@ AppEntry                NOP                             ;De esta forma cargamos 
                         LD (NumFila), HL                ; y lo cargamos a la "variable de fila"
                         LD HL, $10
                         LD (NumColumna), HL
-                        LD HL, Randoma
+                        LD HL, Random
                         LD (DirCaracterUsr), HL
 
 

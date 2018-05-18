@@ -27,16 +27,24 @@ Cuadradito              DEFB $5A,$7E,$5A,$3C,$3C,$BD,$FF,$BD
 Parrilla                DEFB $41,$7F,$41,$7F,$41,$7F,$41,$7F
 Random                  DEFB $7C,$9D,$11,$0A,$F3,$BD,$BB,$FD
 WhiteSnow               DEFB $00,$00,$00,$00,$00,$00,$00,$00
+;     ----- de Carretera .......
+
+
+;     ------ de Coche ........
+
+
+
+
 
 ;       Direcciones de memoria para Coche
 
 
-
+;---------------------------------
 ;       Direcciones de memoria para Carretera
 
 
 
-
+;-------------------------------------------
 AppEntry                CALL Prueba
                         CALL Carretera
                         CALL Coche
@@ -68,6 +76,18 @@ Prueba                  NOP                             ;De esta forma cargamos 
 
 
 
+;---------------
+;Rutinas para coche
+
+
+
+;--------------------------
+;Rutinas para Carretera
+
+
+
+;-----------------------
+;Rutinas para traducir coordenadas
 
 
 Pintar                  CALL CalcDirTercio              ; Replace these lines with your code
@@ -134,7 +154,6 @@ Espera                  HALT
                         DJNZ Espera
                         RET
 
-
 ; Stop planting code after this. (When generating a tape file we save bytes below here)
 AppLast                 EQU *-1                         ; The last used byte's address
 
@@ -184,3 +203,4 @@ BucleBobo               LD A,1
                         CALL Delay
                         jp BucleBobo
                         ret
+
