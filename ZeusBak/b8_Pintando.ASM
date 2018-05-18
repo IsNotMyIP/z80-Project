@@ -31,16 +31,16 @@ DirCaracterUsr          DEFW 0                          ; direccion de memoria d
 
 
 AppEntry                NOP                             ;De esta forma cargamos la coordenada que queremos pintar.
-                        LD HL,$05                        ;Añadimos la fila que queremos pintar en HL
+                        LD HL,5                        ;Añadimos la fila que queremos pintar en HL
                         LD (NumFila), HL                ; y lo cargamos a la "variable de fila"
-                        LD HL,$04                        ;Mismo proceso con la coordenada columna.
+                        LD HL,4                        ;Mismo proceso con la coordenada columna.
                         LD (NumColumna), HL
                         LD HL, Cuadradito
                         LD (DirCaracterUsr), HL
                         CALL Pintar                     ;Llamamos a pintar, que pintará en la coordenada (NumFila) (Numcolumna)el caracter que comienza en (DirCaracterUsr)
-                        LD HL,$15                        ;Lo metemos en registro HL
+                        LD HL,2                        ;Lo metemos en registro HL
                         LD (NumFila), HL                ; y lo cargamos a la "variable de fila"
-                        LD HL, $10
+                        LD HL,9
                         LD (NumColumna), HL
                         LD HL, Random
                         LD (DirCaracterUsr), HL
@@ -60,7 +60,7 @@ CalcDirTercio:                                           ; Calcula la direccion 
                         CP 16                            ;
                         JP nc, TInf                      ; 15 < NumFila <= 22
                         CP 8
-                        jp nc, TMedio
+                        JP NC, TMedio
 TSup                    LD HL,TercioSuperior             ;
                         LD (DirTercio),HL
                         RET
