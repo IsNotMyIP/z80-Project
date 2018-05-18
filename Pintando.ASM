@@ -1,9 +1,8 @@
-; Programa para imprimir en memoria de pantalla un caracter definido por el usuario.
-; La posicion se indica mediante Fila (0 a 21) y Columna (0 a 31)
 
-AppFilename             equ "S8_FastPaint_UsrDefined_Char"                   ; What we're called (for file generation)
 
-AppFirst                equ $8000                       ; First byte of code (uncontended memory)
+AppFilename             EQU "S8_FastPaint_UsrDefined_Char"                   ; What we're CALLed (for file generation)
+
+AppFirst                EQU $8000                       ; First byte of code (uncontended memory)
 
                         zeusemulate "48K","ULA+"        ; Set the model and enable ULA+
 
@@ -12,35 +11,76 @@ AppFirst                equ $8000                       ; First byte of code (un
 
                         org AppFirst                    ; Start of application
                         jp AppEntry
+;       Variables para traducir las coordenadas x y a direcciones de memoria y para Pintar.
+TercioSuperior          EQU  $4000                      ; direccion base de las filas 0 a 7
+TercioMedio             EQU  $4800                      ; direccion base de las filas 8 a 15
+TercioInferior          EQU  $5000                      ; direccion base de las fila 16 a 21
+NumFila                 DEFW 0                          ; Fila en la que se imprime el caracter
+NumColumna              DEFB 0                          ; Columna en la que se imprime el caracter
+DirTercio               DEFW $0000                      ; direccion base en la memoria del tercio de pantalla
+OffsetFila              DEFB $0                         ;
+DirBaseCaracter         DW $0000                      ; direccion base en la memoria de pantalla del caracter
+DirCaracterUsr          DEFW 0                          ; direccion de memoria donde empieza la definicion del caracter
 
-TercioSuperior          equ  $4000                      ; direccion base de las filas 0 a 7
-TercioMedio             equ  $4800                      ; direccion base de las filas 8 a 15
-TercioInferior          equ  $5000                      ; direccion base de las fila 16 a 21
-NumFila                 defb 2                          ; Fila en la que se imprime el caracter
-NumColumna              defb 5                          ; Columna en la que se imprime el caracter
-DirTercio               defw $0000                      ; direccion base en la memoria del tercio de pantalla
-OffsetFila              defb $0                         ;
-DirBaseCaracter         defw $0000                      ; direccion base en la memoria de pantalla del caracter
-Cuadradito              defb $5A,$7E,$5A,$3C,$3C,$BD,$FF,$BD
-Parrilla                defb $41,$7F,$41,$7F,$41,$7F,$41,$7F
-WhiteSnow               defb $00,$00,$00,$00,$00,$00,$00,$00
-DirCaracterUsr          defw 0                          ; direccion de memoria donde empieza la definicion del caracter
+;       Direcciones de memoria donde incluir las figuras que se pintan
+Cuadradito              DEFB $5A,$7E,$5A,$3C,$3C,$BD,$FF,$BD
+Parrilla                DEFB $41,$7F,$41,$7F,$41,$7F,$41,$7F
+Random                  DEFB $7C,$9D,$11,$0A,$F3,$BD,$BB,$FD
+WhiteSnow               DEFB $00,$00,$00,$00,$00,$00,$00,$00
+
+;       Direcciones de memoria para Coche
 
 
 
-AppEntry                call CalcDirTercio              ; Replace these lines with your code
-                        call CalcOffSetFila             ;
-                        call CalcByteDir                ;
-                        ld HL,Cuadradito                ; Guardar en HL la direccion de comienzo del caracter definido
-                        ld (DirCaracterUsr),HL             ; Se la pasamos a la rutina por DirCaracter
-                        call PaintChar
+;       Direcciones de memoria para Carretera
+
+
+
+
+AppEntry                CALL Prueba
+                        CALL Carretera
+                        CALL Coche
+
+
+Coche                   NOP                             ;Aquí metemos el código del coche Carlossss
+
+
+
+Carretera               NOP                             ;Aqui toda la mecanica de la carretera Lali
+
+
+
+Prueba                  NOP                             ;De esta forma cargamos la coordenada que queremos pintar.
+                        LD HL,5                        ;Añadimos la fila que queremos pintar en HL
+                        LD (NumFila), HL                ; y lo cargamos a la "variable de fila"
+                        LD HL,4                        ;Mismo proceso con la coordenada columna.
+                        LD (NumColumna), HL
+                        LD HL, Cuadradito
+                        LD (DirCaracterUsr), HL
+                        CALL Pintar                     ;Llamamos a pintar, que pintará en la coordenada (NumFila) (Numcolumna)el caracter que comienza en (DirCaracterUsr)
+                        LD HL,2                        ;Lo metemos en registro HL
+                        LD (NumFila), HL                ; y lo cargamos a la "variable de fila"
+                        LD HL,9
+                        LD (NumColumna), HL
+                        LD HL, Random
+                        LD (DirCaracterUsr), HL
+
+
+
+
+
+
+Pintar                  CALL CalcDirTercio              ; Replace these lines with your code
+                        CALL CalcOffSetFila             ;
+                        CALL CalcByteDir                ;
+                        CALL PaintChar
 CalcDirTercio:                                           ; Calcula la direccion en memoria de pantalla del tercio
                                                          ; al que pertenece la fila
-                        ld A,(NumFila)                   ;
-                        cp 16                            ;
-                        jp nc, TInf                      ; 15 < NumFila <= 22
-                        cp 8
-                        jp nc, TMedio                    ; 7 < NumFila <=15
+                        LD A,(NumFila)                   ;
+                        CP 16                            ;
+                        JP nc, TInf                      ; 15 < NumFila <= 22
+                        CP 8
+                        JP NC, TMedio
 TSup                    LD HL,TercioSuperior             ;
                         LD (DirTercio),HL
                         RET
@@ -58,7 +98,7 @@ CalcOffSetFila:                                          ; NumFila*$20 con NumFi
                         AND A,$07                        ; Nos quedamos con los tres ?ltimos bits del n?mero de fila
                         LD L,A                           ;
                         LD H,0                           ;
-                                                         ; Multiplicar por $20 equivale a desplazar HL 5 bits a la izquierda
+                                                         ; Multiplicar por $20 EQUivale a desplazar HL 5 bits a la izquierda
                         LD B,5                           ;
 Bucle                   RLC L
                         DJNZ Bucle
@@ -96,7 +136,7 @@ Espera                  HALT
 
 
 ; Stop planting code after this. (When generating a tape file we save bytes below here)
-AppLast                 equ *-1                         ; The last used byte's address
+AppLast                 EQU *-1                         ; The last used byte's address
 
 ; Generate some useful debugging commands
 
@@ -104,8 +144,8 @@ AppLast                 equ *-1                         ; The last used byte's a
 
 ; Setup the emulation registers, so Zeus can emulate this code correctly
 
-Zeus_PC                 equ AppEntry                            ; Tell the emulator where to start
-Zeus_SP                 equ $FF40                               ; Tell the emulator where to put the stack
+Zeus_PC                 EQU AppEntry                            ; Tell the emulator where to start
+Zeus_SP                 EQU $FF40                               ; Tell the emulator where to put the stack
 
 ; These generate some output files
 
@@ -124,24 +164,23 @@ BucleBobo               LD A,1
                         LD (NumFila),A
                         LD A,15
                         LD (NumColumna),A
-                        call CalcDirTercio                            ; Replace these lines with your code
-                        call CalcOffSetFila             ;
-                        call CalcByteDir                ;
-                        ld HL,Parrilla                ; Guardar en HL la direccion de comienzo del caracter definido
-                        ld (DirCaracterUsr),HL             ; Se la pasamos a la rutina por DirCaracter
-                        call PaintChar
-                        call Delay
+                        CALL CalcDirTercio                            ; Replace these lines with your code
+                        CALL CalcOffSetFila             ;
+                        CALL CalcByteDir                ;
+                        LD HL,Parrilla                ; Guardar en HL la direccion de comienzo del caracter definido
+                        LD (DirCaracterUsr),HL             ; Se la pasamos a la rutina por DirCaracter
+                        CALL PaintChar
+                        CALL Delay
                         LD A,1
                         LD (NumFila),A
                         LD A,15
                         LD (NumColumna),A
-                        call CalcDirTercio                            ; Replace these lines with your code
-                        call CalcOffSetFila             ;
-                        call CalcByteDir                ;
-                        ld HL,WhiteSnow                 ; Guardar en HL la direccion de comienzo del caracter definido
-                        ld (DirCaracterUsr),HL             ; Se la pasamos a la rutina por DirCaracter
-                        call PaintChar
-                        call Delay
+                        CALL CalcDirTercio                            ; Replace these lines with your code
+                        CALL CalcOffSetFila             ;
+                        CALL CalcByteDir                ;
+                        LD HL,WhiteSnow                 ; Guardar en HL la direccion de comienzo del caracter definido
+                        LD (DirCaracterUsr),HL             ; Se la pasamos a la rutina por DirCaracter
+                        CALL PaintChar
+                        CALL Delay
                         jp BucleBobo
                         ret
-
