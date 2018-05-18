@@ -45,16 +45,17 @@ WhiteSnow               DEFB $00,$00,$00,$00,$00,$00,$00,$00
 
 
 
-AppEntry                CALL Carretera
+AppEntry                CALL Prueba
+                        CALL Carretera
                         CALL Coche
-                        HALT
+
 
 Coche                   NOP                             ;Aquí metemos el código del coche Carlossss
-                        RET
+
 
 
 Carretera               NOP                             ;Aqui toda la mecanica de la carretera Lali
-                        RET
+
 
 
 Prueba                  NOP                             ;De esta forma cargamos la coordenada que queremos pintar.
@@ -71,7 +72,7 @@ Prueba                  NOP                             ;De esta forma cargamos 
                         LD (NumColumna), HL
                         LD HL, Random
                         LD (DirCaracterUsr), HL
-                        RET
+
 
 
 
@@ -140,8 +141,6 @@ PaintChar:                                               ; Pinta el caracter
                         LD A,(IX)                       ;
                         LD (HL),A                      ; Esto finalmente pinta en memoria
                         LD B,7
-
-
 Otrasfilas              LD DE,$100
                         ADD HL,DE
                         INC IX
@@ -204,4 +203,3 @@ BucleBobo               LD A,1
                         CALL Delay
                         jp BucleBobo
                         ret
-

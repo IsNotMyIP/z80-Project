@@ -1,4 +1,5 @@
-
+; Programa para imprimir en memoria de pantalla un caracter definido por el usuario.
+; La posicion se indica mediante Fila (0 a 21) y Columna (0 a 31)
 
 AppFilename             EQU "S8_FastPaint_UsrDefined_Char"                   ; What we're CALLed (for file generation)
 
@@ -11,7 +12,7 @@ AppFirst                EQU $8000                       ; First byte of code (un
 
                         org AppFirst                    ; Start of application
                         jp AppEntry
-;       Variables para traducir las coordenadas x y a direcciones de memoria y para Pintar.
+
 TercioSuperior          EQU  $4000                      ; direccion base de las filas 0 a 7
 TercioMedio             EQU  $4800                      ; direccion base de las filas 8 a 15
 TercioInferior          EQU  $5000                      ; direccion base de las fila 16 a 21
@@ -20,55 +21,26 @@ NumColumna              DEFB 0                          ; Columna en la que se i
 DirTercio               DEFW $0000                      ; direccion base en la memoria del tercio de pantalla
 OffsetFila              DEFB $0                         ;
 DirBaseCaracter         DW $0000                      ; direccion base en la memoria de pantalla del caracter
-DirCaracterUsr          DEFW 0                          ; direccion de memoria donde empieza la definicion del caracter
-
-;       Direcciones de memoria donde incluir las figuras que se pintan
 Cuadradito              DEFB $5A,$7E,$5A,$3C,$3C,$BD,$FF,$BD
 Parrilla                DEFB $41,$7F,$41,$7F,$41,$7F,$41,$7F
 Random                  DEFB $7C,$9D,$11,$0A,$F3,$BD,$BB,$FD
 WhiteSnow               DEFB $00,$00,$00,$00,$00,$00,$00,$00
-;     ----- de Carretera .......
-
-
-;     ------ de Coche ........
+DirCaracterUsr          DEFW 0                          ; direccion de memoria donde empieza la definicion del caracter
 
 
 
 
-
-;       Direcciones de memoria para Coche
-
-
-;---------------------------------
-;       Direcciones de memoria para Carretera
-
-
-
-;-------------------------------------------
-AppEntry                CALL Prueba
-                        CALL Carretera
-                        CALL Coche
-
-
-Coche                   NOP                             ;Aquí metemos el código del coche Carlossss
-
-
-
-Carretera               NOP                             ;Aqui toda la mecanica de la carretera Lali
-
-
-
-Prueba                  NOP                             ;De esta forma cargamos la coordenada que queremos pintar.
-                        LD HL,5                        ;Añadimos la fila que queremos pintar en HL
+AppEntry                NOP                             ;De esta forma cargamos la coordenada que queremos pintar.
+                        LD HL,$05                        ;Añadimos la fila que queremos pintar en HL
                         LD (NumFila), HL                ; y lo cargamos a la "variable de fila"
-                        LD HL,4                        ;Mismo proceso con la coordenada columna.
+                        LD HL,$04                        ;Mismo proceso con la coordenada columna.
                         LD (NumColumna), HL
                         LD HL, Cuadradito
                         LD (DirCaracterUsr), HL
                         CALL Pintar                     ;Llamamos a pintar, que pintará en la coordenada (NumFila) (Numcolumna)el caracter que comienza en (DirCaracterUsr)
-                        LD HL,2                        ;Lo metemos en registro HL
+                        LD HL,9                        ;Lo metemos en registro HL
                         LD (NumFila), HL                ; y lo cargamos a la "variable de fila"
-                        LD HL,9
+                        LD HL, $10
                         LD (NumColumna), HL
                         LD HL, Random
                         LD (DirCaracterUsr), HL
@@ -76,18 +48,6 @@ Prueba                  NOP                             ;De esta forma cargamos 
 
 
 
-;---------------
-;Rutinas para coche
-
-
-
-;--------------------------
-;Rutinas para Carretera
-
-
-
-;-----------------------
-;Rutinas para traducir coordenadas
 
 
 Pintar                  CALL CalcDirTercio              ; Replace these lines with your code
@@ -100,7 +60,7 @@ CalcDirTercio:                                           ; Calcula la direccion 
                         CP 16                            ;
                         JP nc, TInf                      ; 15 < NumFila <= 22
                         CP 8
-                        JP NC, TMedio
+                        jp nc, TMedio
 TSup                    LD HL,TercioSuperior             ;
                         LD (DirTercio),HL
                         RET
@@ -154,6 +114,7 @@ Espera                  HALT
                         DJNZ Espera
                         RET
 
+
 ; Stop planting code after this. (When generating a tape file we save bytes below here)
 AppLast                 EQU *-1                         ; The last used byte's address
 
@@ -203,4 +164,9 @@ BucleBobo               LD A,1
                         CALL Delay
                         jp BucleBobo
                         ret
+
+
+
+
+
 
