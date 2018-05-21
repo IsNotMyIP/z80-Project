@@ -38,24 +38,33 @@ WhiteSnow               DEFB $00,$00,$00,$00,$00,$00,$00,$00
 
 ;       Direcciones de memoria para Coche
 
-
+ Columnacoche          DEFB 0
+ Filacoche             DEFB 0
 ;---------------------------------
 ;       Direcciones de memoria para Carretera
 
 
 
 ;-------------------------------------------
-AppEntry                CALL Prueba
-                        CALL Carretera
+AppEntry                CALL Carretera
                         CALL Coche
+                        CALL BorrarCoche
+
+                        HALT
+                        RET
 
 
 Coche                   NOP                             ;Aquí metemos el código del coche Carlossss
-
-
-
+                        LD HL,20                        ;Añadimos la fila que queremos pintar en HL
+                        LD (NumFila), HL                ; y lo cargamos a la "variable de fila"
+                        LD HL,16                        ;Mismo proceso con la coordenada columna.
+                        LD (NumColumna), HL
+                        LD HL, Cuadradito
+                        LD (DirCaracterUsr), HL
+                        CALL Pintar                     ;Llamamos a pintar, que pintará en la coordenada (NumFila) (Numcolumna)el caracter que comienza en (DirCaracterUsr)
+                        RET
 Carretera               NOP                             ;Aqui toda la mecanica de la carretera Lali
-
+                        RET
 
 
 Prueba                  NOP                             ;De esta forma cargamos la coordenada que queremos pintar.
@@ -72,17 +81,26 @@ Prueba                  NOP                             ;De esta forma cargamos 
                         LD (NumColumna), HL
                         LD HL, Random
                         LD (DirCaracterUsr), HL
-
+                        RET
 
 
 
 ;---------------
-;Rutinas para coche
 
 
 
+
+BorrarCoche             LD HL,20                        ;Añadimos la fila que queremos pintar en HL
+                        LD (NumFila), HL                ; y lo cargamos a la "variable de fila"
+                        LD HL,16                        ;Mismo proceso con la coordenada columna.
+                        LD (NumColumna), HL
+                        LD HL, WhiteSnow
+                        LD (DirCaracterUsr), HL
+                        CALL Pintar
+                        RET
 ;--------------------------
 ;Rutinas para Carretera
+
 
 
 
@@ -203,4 +221,3 @@ BucleBobo               LD A,1
                         CALL Delay
                         jp BucleBobo
                         ret
-
